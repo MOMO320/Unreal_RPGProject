@@ -3,25 +3,28 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Pawn.h"
-#include "GameFramework/FloatingPawnMovement.h"
+#include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFrameWork/SpringArmComponent.h"
 #include "Engine/Classes/Camera/CameraComponent.h"
 #include "Engine/Classes/Components/CapsuleComponent.h"
-#include "RPGPawn.generated.h"
+#include "GothicCharacter.generated.h"
+
 
 UCLASS()
-class RPGGAMEPROJECT_API ARPGPawn : public APawn
+class RPGGAMEPROJECT_API AGothicCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this pawn's properties
-	ARPGPawn();
+	// Sets default values for this character's properties
+	AGothicCharacter();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	void SetControlMode(int32 ControlMode);
 
 public:	
 	// Called every frame
@@ -30,15 +33,7 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UPROPERTY(VisibleAnywhere, Category = Collision)
-		UCapsuleComponent* Capsule;
-
-	UPROPERTY(VisibleAnywhere, Category = Visual)
-		USkeletalMeshComponent* Mesh;
-
-	UPROPERTY(VisibleAnywhere, Category = Movement)
-		UFloatingPawnMovement* Movement;
-
+public:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 		USpringArmComponent* SpringArm;
 
@@ -48,5 +43,6 @@ public:
 private:
 	void UpDown(float NewAxisValue);
 	void LeftRight(float NewAxisValue);
-
+	void LookUp(float NewAxisValue);
+	void Turn(float NewAxisValue);
 };

@@ -7,3 +7,11 @@ void ARPGPlayerController::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 }
+
+void ARPGPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	FInputModeGameOnly InputMode;
+	SetInputMode(InputMode);
+}
