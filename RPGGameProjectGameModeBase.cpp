@@ -3,10 +3,11 @@
 
 #include "RPGGameProjectGameModeBase.h"
 #include "RPGPawn.h"
+#include "GothicCharacter.h"
 #include "RPGPlayerController.h"
 
 ARPGGameProjectGameModeBase::ARPGGameProjectGameModeBase()
 {
-	DefaultPawnClass = ARPGPawn::StaticClass();
+	DefaultPawnClass = AGothicCharacter::StaticClass();
 	PlayerControllerClass = ARPGPlayerController::StaticClass();
 }

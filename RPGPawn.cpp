@@ -26,11 +26,20 @@ ARPGPawn::ARPGPawn()
 	SpringArm->TargetArmLength = 400.0f;
 	SpringArm->SetRelativeRotation(FRotator(-15.0f, 0.0f, 0.0f));
 
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_VALKIRY(TEXT("/Game/Valkiria/Mesh/SK_Valkiria.SK_Valkiria"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_VALKIRY(TEXT("/Game/GothicGirl/Character/Meshes/SK_GothicGirl.SK_GothicGirl"));
 
 	if (SK_VALKIRY.Succeeded())
 	{
 		Mesh->SetSkeletalMesh(SK_VALKIRY.Object);
+	}
+
+	Mesh->SetAnimationMode(EAnimationMode::AnimationBlueprint);
+
+	static ConstructorHelpers::FClassFinder<UAnimInstance> GOTHIC_ANIM(TEXT("/Game/BluePrints/GothicAnimBluePrint.GothicAnimBluePrint_C"));
+
+	if (GOTHIC_ANIM.Succeeded())
+	{
+		Mesh->SetAnimInstanceClass(GOTHIC_ANIM.Class);
 	}
 }
 
@@ -38,7 +47,8 @@ ARPGPawn::ARPGPawn()
 void ARPGPawn::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+
 }
 
 // Called every frame
@@ -53,5 +63,18 @@ void ARPGPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	PlayerInputComponent->BindAxis(TEXT("UpDown"), this, &ARPGPawn::UpDown);
+	PlayerInputComponent->BindAxis(TEXT("LeftRight"), this, &ARPGPawn::LeftRight);
+
+}
+
+void ARPGPawn::UpDown(float NewAxisValue)
+{
+	AddMovementInput(GetActorForwardVector(), NewAxisValue);
+}
+
+void ARPGPawn::LeftRight(float NewAxisValue)
+{
+	AddMovementInput(GetActorRightVector(), NewAxisValue);
 }
 

@@ -17,4 +17,6 @@ class RPGGAMEPROJECT_API ARPGPlayerController : public APlayerController
 public:
 	virtual void PostInitializeComponents() override;
 	
+protected:
+	virtual void BeginPlay() override;
 };
