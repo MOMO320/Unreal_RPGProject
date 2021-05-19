@@ -60,6 +60,7 @@ void AGothicCharacter::SetControlMode(int32 ControlMode)
 		GetCharacterMovement()->bOrientRotationToMovement = true;
 		GetCharacterMovement()->bUseControllerDesiredRotation = false;
 		GetCharacterMovement()->RotationRate = FRotator(0.0f, 720.0f, 0.0f);
+		GetCharacterMovement()->JumpZVelocity = 600.0f;
 	}
 }
 
@@ -79,6 +80,7 @@ void AGothicCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAxis(TEXT("LeftRight"), this, &AGothicCharacter::LeftRight);
 	PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &AGothicCharacter::LookUp);
 	PlayerInputComponent->BindAxis(TEXT("Turn"), this, &AGothicCharacter::Turn);
+	PlayerInputComponent->BindAction(TEXT("Jump"), IE_Pressed, this, &AGothicCharacter::Jump);
 }
 
 void AGothicCharacter::UpDown(float NewAxisValue)
@@ -100,4 +102,6 @@ void AGothicCharacter::Turn(float NewAxisValue)
 {
 	AddControllerYawInput(NewAxisValue);
 }
+
+
 
