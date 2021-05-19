@@ -6,6 +6,7 @@
 void ARPGPlayerController::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+<<<<<<< HEAD
 }
 
 void ARPGPlayerController::BeginPlay()
@@ -15,3 +16,6 @@ void ARPGPlayerController::BeginPlay()
 	FInputModeGameOnly InputMode;
 	SetInputMode(InputMode);
 }
+=======
+}
+>>>>>>> c06ff3c (발키리 캐릭터 기본 생성)

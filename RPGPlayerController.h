@@ -17,6 +17,9 @@ class RPGGAMEPROJECT_API ARPGPlayerController : public APlayerController
 public:
 	virtual void PostInitializeComponents() override;
 	
+<<<<<<< HEAD
 protected:
 	virtual void BeginPlay() override;
+=======
+>>>>>>> c06ff3c (발키리 캐릭터 기본 생성)
 };

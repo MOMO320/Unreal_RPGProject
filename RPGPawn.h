@@ -45,8 +45,11 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 		UCameraComponent* Camera;
 
+<<<<<<< HEAD
 private:
 	void UpDown(float NewAxisValue);
 	void LeftRight(float NewAxisValue);
 
+=======
+>>>>>>> c06ff3c (발키리 캐릭터 기본 생성)
 };

@@ -26,12 +26,17 @@ ARPGPawn::ARPGPawn()
 	SpringArm->TargetArmLength = 400.0f;
 	SpringArm->SetRelativeRotation(FRotator(-15.0f, 0.0f, 0.0f));
 
+<<<<<<< HEAD
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_VALKIRY(TEXT("/Game/GothicGirl/Character/Meshes/SK_GothicGirl.SK_GothicGirl"));
+=======
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_VALKIRY(TEXT("/Game/Valkiria/Mesh/SK_Valkiria.SK_Valkiria"));
+>>>>>>> c06ff3c (발키리 캐릭터 기본 생성)
 
 	if (SK_VALKIRY.Succeeded())
 	{
 		Mesh->SetSkeletalMesh(SK_VALKIRY.Object);
 	}
+<<<<<<< HEAD
 
 	Mesh->SetAnimationMode(EAnimationMode::AnimationBlueprint);
 
@@ -41,14 +46,20 @@ ARPGPawn::ARPGPawn()
 	{
 		Mesh->SetAnimInstanceClass(GOTHIC_ANIM.Class);
 	}
+=======
+>>>>>>> c06ff3c (발키리 캐릭터 기본 생성)
 }
 
 // Called when the game starts or when spawned
 void ARPGPawn::BeginPlay()
 {
 	Super::BeginPlay();
+<<<<<<< HEAD
 
 
+=======
+	
+>>>>>>> c06ff3c (발키리 캐릭터 기본 생성)
 }
 
 // Called every frame
@@ -63,6 +74,7 @@ void ARPGPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+<<<<<<< HEAD
 	PlayerInputComponent->BindAxis(TEXT("UpDown"), this, &ARPGPawn::UpDown);
 	PlayerInputComponent->BindAxis(TEXT("LeftRight"), this, &ARPGPawn::LeftRight);
 
@@ -76,5 +88,7 @@ void ARPGPawn::UpDown(float NewAxisValue)
 void ARPGPawn::LeftRight(float NewAxisValue)
 {
 	AddMovementInput(GetActorRightVector(), NewAxisValue);
+=======
+>>>>>>> c06ff3c (발키리 캐릭터 기본 생성)
 }
 
