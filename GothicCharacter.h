@@ -37,7 +37,9 @@ public:
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	
-	bool isJumpStart;
+	bool CanSetWeapon();
+	
+	void SetWeapon(class AGothicWeapon* NewWeapon);
 
 private:
 	void UpDown(float NewAxisValue);
@@ -65,6 +67,10 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 		UCameraComponent* Camera;
 
+	UPROPERTY(VisibleAnywhere, Category = Weapon)
+		class AGothicWeapon* CurrentWeapon;
+
+	bool isJumpStart;
 private:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 		bool IsAttacking;

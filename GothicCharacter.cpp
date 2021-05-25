@@ -81,13 +81,13 @@ void AGothicCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	FName WeaponSocket(TEXT("WeaponSocket"));
-	auto CurWeapon = GetWorld()->SpawnActor<AGothicWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
+	//FName WeaponSocket(TEXT("WeaponSocket"));
+	//auto CurWeapon = GetWorld()->SpawnActor<AGothicWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
 
-	if (nullptr != CurWeapon)
-	{
-		CurWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponSocket);
-	}
+	//if (nullptr != CurWeapon)
+	//{
+	//	CurWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponSocket);
+	//}
 
 }
 
@@ -170,6 +170,25 @@ float AGothicCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	}
 
 	return FinalDamage;
+}
+
+bool AGothicCharacter::CanSetWeapon()
+{
+	return (nullptr == CurrentWeapon);
+}
+
+void AGothicCharacter::SetWeapon(AGothicWeapon* NewWeapon)
+{
+	ABCHECK(nullptr != NewWeapon && nullptr == CurrentWeapon);
+	FName WeaponSocket(TEXT("WeaponSocket"));
+
+	if (nullptr != NewWeapon)
+	{
+		NewWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponSocket);
+		
+		NewWeapon->SetOwner(this);
+		CurrentWeapon = NewWeapon;
+	}
 }
 
 void AGothicCharacter::UpDown(float NewAxisValue)
