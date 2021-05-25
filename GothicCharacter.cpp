@@ -3,6 +3,7 @@
 
 #include "GothicCharacter.h"
 #include "DrawDebugHelpers.h"
+#include "GothicWeapon.h"
 #include "GothicGirlAnimInstance.h"
 
 // Sets default values
@@ -25,7 +26,7 @@ AGothicCharacter::AGothicCharacter()
 
 	// SkeletalMesh Finder
 	{	
-		static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_GOTHIC_GIRL(TEXT("/Game/GothicGirl/Character/Meshes/SK_GothicGirl.SK_GothicGirl"));
+		static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_GOTHIC_GIRL(TEXT("/Game/GothicGirl/Character/Meshes/Skin01/SK_GothicGirl_NPRSkin.SK_GothicGirl_NPRSkin"));
 
 		if (SK_GOTHIC_GIRL.Succeeded())
 		{
@@ -37,11 +38,28 @@ AGothicCharacter::AGothicCharacter()
 
 	// AnimInstance Finder
 	{
-		static ConstructorHelpers::FClassFinder<UAnimInstance> ANIM_GOTHIC_GIRL(TEXT("/Game/BluePrints/GothicAnimBluePrint.GothicAnimBluePrint_C"));
+		static ConstructorHelpers::FClassFinder<UAnimInstance> ANIM_GOTHIC_GIRL(TEXT("/Game/BluePrints/BP_GothicAnim.BP_GothicAnim_C"));
 		
 		if (ANIM_GOTHIC_GIRL.Succeeded())
 		{
 			GetMesh()->SetAnimInstanceClass(ANIM_GOTHIC_GIRL.Class);
+		}
+	}
+
+	// Socket Mesh Finder
+	{
+		FName BeltSocket(TEXT("BeltSocket"));
+
+		if (GetMesh()->DoesSocketExist(BeltSocket))
+		{
+			Belt = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("BELT"));
+			static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_BELT(TEXT("/Game/GothicGirl/Weapon/Meshes/SK_Belt.SK_Belt"));
+			if (SK_BELT.Succeeded())
+			{
+				Belt->SetSkeletalMesh(SK_BELT.Object);
+			}
+
+			Belt->SetupAttachment(GetMesh(), BeltSocket);
 		}
 	}
 
@@ -62,6 +80,15 @@ AGothicCharacter::AGothicCharacter()
 void AGothicCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	FName WeaponSocket(TEXT("WeaponSocket"));
+	auto CurWeapon = GetWorld()->SpawnActor<AGothicWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
+
+	if (nullptr != CurWeapon)
+	{
+		CurWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponSocket);
+	}
+
 }
 
 void AGothicCharacter::SetControlMode(int32 ControlMode)
@@ -185,6 +212,7 @@ void AGothicCharacter::Attack()
 		IsAttacking = true;
 	}	
 }
+
 
 void AGothicCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {

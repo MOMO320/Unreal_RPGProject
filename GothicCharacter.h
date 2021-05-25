@@ -44,7 +44,6 @@ private:
 	void LeftRight(float NewAxisValue);
 	void LookUp(float NewAxisValue);
 	void Turn(float NewAxisValue);
-	
 	void Attack();
 
 	UFUNCTION()
@@ -54,7 +53,12 @@ private:
 	void AttackEndComboState();
 	void AttackCheck();
 
+
 public:
+
+	UPROPERTY(VisibleAnywhere, Category = Weapon)
+		USkeletalMeshComponent* Belt;
+
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 		USpringArmComponent* SpringArm;
 
