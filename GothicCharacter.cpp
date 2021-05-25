@@ -2,6 +2,7 @@
 
 
 #include "GothicCharacter.h"
+#include "DrawDebugHelpers.h"
 #include "GothicGirlAnimInstance.h"
 
 // Sets default values
@@ -19,6 +20,8 @@ AGothicCharacter::AGothicCharacter()
 	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -88.0f), FRotator(0.0f, -90.0f, 0.0f));
 	SpringArm->TargetArmLength = 250.0f;
 	SpringArm->SetRelativeRotation(FRotator(-20.0f, 0.0f, 0.0f));
+
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("GothicCharacter"));
 
 	// SkeletalMesh Finder
 	{	
@@ -49,6 +52,9 @@ AGothicCharacter::AGothicCharacter()
 
 	MaxCombo = 4;
 	AttackEndComboState();
+
+	AttackRange = 200.0f;
+	AttackRadius = 50.0f;
 
 }
 
@@ -120,6 +126,23 @@ void AGothicCharacter::PostInitializeComponents()
 		}
 
 	});
+
+	GothicGirlAnim->OnAttackHitCheck.AddUObject(this, &AGothicCharacter::AttackCheck);
+}
+
+float AGothicCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float FinalDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	ABLOG(Error, TEXT("Actor : %s took Damage : %f"), *GetName(), FinalDamage);
+
+	if (FinalDamage > 0.0f)
+	{
+		GothicGirlAnim->SetDeadAnim();
+		SetActorEnableCollision(false);
+	}
+
+	return FinalDamage;
 }
 
 void AGothicCharacter::UpDown(float NewAxisValue)
@@ -184,6 +207,52 @@ void AGothicCharacter::AttackEndComboState()
 	IsComboInputOn = false;
 	CanNextCombo = false;
 	CurrentCombo = 0;
+}
+
+void AGothicCharacter::AttackCheck()
+{
+	FHitResult HitResult;
+	FCollisionQueryParams Params(NAME_None, false, this);
+	bool bResult = GetWorld()->SweepSingleByChannel(
+		HitResult,
+		GetActorLocation(),
+		GetActorLocation() + GetActorForwardVector() * AttackRange,
+		FQuat::Identity,
+		ECollisionChannel::ECC_GameTraceChannel12,
+		FCollisionShape::MakeSphere(AttackRadius),
+		Params
+	);
+
+#if ENABLE_DRAW_DEBUG
+
+	FVector TraceVec = GetActorForwardVector() * AttackRange;
+	FVector Center = GetActorLocation() + TraceVec * 0.5f;
+	float HalfHeight = AttackRange * 0.5f + AttackRadius;
+	FQuat CapsuleRot = FRotationMatrix::MakeFromZ(TraceVec).ToQuat();	// ÄõÅÍ´Ï¾ð
+	FColor DrawColor = bResult ? FColor::Green : FColor::Red;
+	float DebugLifeTime = 5.0f;
+
+	DrawDebugCapsule(GetWorld(),
+		Center,
+		HalfHeight,
+		AttackRadius,
+		CapsuleRot,
+		DrawColor,
+		false,
+		DebugLifeTime);
+
+#endif 
+
+	if (bResult)
+	{
+		if (HitResult.Actor.IsValid())
+		{
+			ABLOG(Warning, TEXT("Hit Actor Name : %s"), *HitResult.Actor->GetName());
+
+			FDamageEvent DamageEvent;
+			HitResult.Actor->TakeDamage(50.0f, DamageEvent, GetController(), this);
+		}
+	}
 }
 
 

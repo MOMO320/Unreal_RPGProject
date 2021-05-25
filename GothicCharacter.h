@@ -35,7 +35,9 @@ public:
 
 	virtual void PostInitializeComponents() override;
 
-		bool isJumpStart;
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+	
+	bool isJumpStart;
 
 private:
 	void UpDown(float NewAxisValue);
@@ -50,6 +52,7 @@ private:
 
 	void AttackStartComboState();
 	void AttackEndComboState();
+	void AttackCheck();
 
 public:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
@@ -76,4 +79,10 @@ private:
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 		int32 MaxCombo;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+		float AttackRange;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+		float AttackRadius;
 };

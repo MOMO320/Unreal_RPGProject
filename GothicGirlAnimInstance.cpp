@@ -9,6 +9,7 @@ UGothicGirlAnimInstance::UGothicGirlAnimInstance()
 {
 	CurrentPawnSpeed = 0.0f;
 	IsInAir = false;
+	IsDead = false;
 
 	// AnimMontage Finder
 	{
@@ -28,7 +29,9 @@ void UGothicGirlAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	// 객체가 유효한지 점검하는 함수
 	auto Pawn = TryGetPawnOwner();
 
-	if (::IsValid(Pawn))
+	if (!::IsValid(Pawn)) return;
+
+	if (!IsDead)
 	{	// Size() : 두사이의 거리를 구하는 함수
 		CurrentPawnSpeed = Pawn->GetVelocity().Size(); 
 
@@ -45,11 +48,13 @@ void UGothicGirlAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 void UGothicGirlAnimInstance::PlayAttackMontage()
 {
+	ABCHECK(!IsDead);
 	Montage_Play(AttackMontage, 1.0f);
 }
 
 void UGothicGirlAnimInstance::JumpToAttackMontageSection(int32 NewSection)
 {
+	ABCHECK(!IsDead);
 	ABCHECK(Montage_IsPlaying(AttackMontage));
 	Montage_JumpToSection(GetAttackMontageSectionName(NewSection), AttackMontage);
 }
