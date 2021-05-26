@@ -2,6 +2,7 @@
 
 
 #include "GothicCharacter.h"
+#include "GothicChracterStatComponent.h"
 #include "DrawDebugHelpers.h"
 #include "GothicWeapon.h"
 #include "GothicGirlAnimInstance.h"
@@ -14,6 +15,7 @@ AGothicCharacter::AGothicCharacter()
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SPRINGARM"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CAMERA"));
+	GothicCharacterStat = CreateDefaultSubobject<UGothicCharacterStatComponent>(TEXT("CHARACTERSTAT"));
 
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	Camera->SetupAttachment(SpringArm);

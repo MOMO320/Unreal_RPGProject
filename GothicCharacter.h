@@ -70,6 +70,9 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 		class AGothicWeapon* CurrentWeapon;
 
+	UPROPERTY(VisibleAnywhere, Category = Stat)
+		class UGothicCharacterStatComponent* GothicCharacterStat;
+
 	bool isJumpStart;
 private:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
