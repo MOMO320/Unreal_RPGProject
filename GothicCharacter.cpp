@@ -7,6 +7,7 @@
 #include "GothicWeapon.h"
 #include "GothicGirlAnimInstance.h"
 #include "Components/WidgetComponent.h"
+#include "GothicCharacterWidget.h"
 
 // Sets default values
 AGothicCharacter::AGothicCharacter()
@@ -100,13 +101,12 @@ void AGothicCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//FName WeaponSocket(TEXT("WeaponSocket"));
-	//auto CurWeapon = GetWorld()->SpawnActor<AGothicWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
+	auto CharacterWidget = Cast<UGothicCharacterWidget>(HPBarWidget->GetUserWidgetObject());
 
-	//if (nullptr != CurWeapon)
-	//{
-	//	CurWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponSocket);
-	//}
+	if (nullptr != CharacterWidget)
+	{
+		CharacterWidget->BindCharaceterStat(GothicCharacterStat);
+	}
 
 }
 

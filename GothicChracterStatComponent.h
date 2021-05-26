@@ -7,6 +7,8 @@
 #include "GothicChracterStatComponent.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FOnHPIsZeroDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnHPChangeDelegate);
+
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class RPGGAMEPROJECT_API UGothicChracterStatComponent : public UActorComponent
@@ -18,10 +20,12 @@ public:
 	UGothicChracterStatComponent();
 	void SetNewLevel(int32 NewLevel);
 	void SetDamage(float NewDamage);
+	void SetHP(float NewHP);
 	float GetAttack();
+	float GetHPRatio();
 
 	FOnHPIsZeroDelegate OnHPIsZero;
-
+	FOnHPChangeDelegate OnHPChanged;
 
 protected:
 	// Called when the game starts
