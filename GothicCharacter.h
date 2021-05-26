@@ -71,7 +71,7 @@ public:
 		class AGothicWeapon* CurrentWeapon;
 
 	UPROPERTY(VisibleAnywhere, Category = Stat)
-		class UGothicCharacterStatComponent* GothicCharacterStat;
+		class UGothicChracterStatComponent* GothicCharacterStat;
 
 	bool isJumpStart;
 private:

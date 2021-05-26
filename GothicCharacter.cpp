@@ -15,8 +15,7 @@ AGothicCharacter::AGothicCharacter()
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SPRINGARM"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CAMERA"));
-	GothicCharacterStat = CreateDefaultSubobject<UGothicCharacterStatComponent>(TEXT("CHARACTERSTAT"));
-
+	GothicCharacterStat = CreateDefaultSubobject<UGothicChracterStatComponent>(TEXT("CHARACTERSTAT"));
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	Camera->SetupAttachment(SpringArm);
 
@@ -157,6 +156,12 @@ void AGothicCharacter::PostInitializeComponents()
 	});
 
 	GothicGirlAnim->OnAttackHitCheck.AddUObject(this, &AGothicCharacter::AttackCheck);
+
+	GothicCharacterStat->OnHPIsZero.AddLambda([this]()->void {
+		ABLOG(Warning, TEXT("OnHPIsZero"));
+		GothicGirlAnim->SetDeadAnim();
+		SetActorEnableCollision(false);
+		});
 }
 
 float AGothicCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -164,12 +169,8 @@ float AGothicCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	float FinalDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
 	ABLOG(Error, TEXT("Actor : %s took Damage : %f"), *GetName(), FinalDamage);
-
-	if (FinalDamage > 0.0f)
-	{
-		GothicGirlAnim->SetDeadAnim();
-		SetActorEnableCollision(false);
-	}
+	
+	GothicCharacterStat->SetDamage(FinalDamage);
 
 	return FinalDamage;
 }
@@ -299,7 +300,7 @@ void AGothicCharacter::AttackCheck()
 			ABLOG(Warning, TEXT("Hit Actor Name : %s"), *HitResult.Actor->GetName());
 
 			FDamageEvent DamageEvent;
-			HitResult.Actor->TakeDamage(50.0f, DamageEvent, GetController(), this);
+			HitResult.Actor->TakeDamage(GothicCharacterStat->GetAttack(), DamageEvent, GetController(), this);
 		}
 	}
 }

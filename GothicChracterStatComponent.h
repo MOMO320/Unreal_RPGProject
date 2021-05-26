@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "GothicChracterStatComponent.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FOnHPIsZeroDelegate);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class RPGGAMEPROJECT_API UGothicChracterStatComponent : public UActorComponent
@@ -15,7 +16,12 @@ class RPGGAMEPROJECT_API UGothicChracterStatComponent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UGothicChracterStatComponent();
-	void  SetNewLevel(int32 NewLevel);
+	void SetNewLevel(int32 NewLevel);
+	void SetDamage(float NewDamage);
+	float GetAttack();
+
+	FOnHPIsZeroDelegate OnHPIsZero;
+
 
 protected:
 	// Called when the game starts
@@ -28,7 +34,7 @@ private:
 	UPROPERTY(EditInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = true))
 		int32 Level;
 
-	UPROPERTY(Transient, VisibleInstnaceOnly, Category = Stat, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = true))
 		float CurrentHP;
 
 

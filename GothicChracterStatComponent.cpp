@@ -36,6 +36,23 @@ void UGothicChracterStatComponent::SetNewLevel(int32 NewLevel)
 	}
 }
 
+void UGothicChracterStatComponent::SetDamage(float NewDamage)
+{
+	ABCHECK(nullptr != CurrentStatData);
+	CurrentHP = FMath::Clamp<float>(CurrentHP - NewDamage, 0.0f, CurrentStatData->MaxHP);
+
+	if (CurrentHP <= 0.0f)
+	{
+		OnHPIsZero.Broadcast();
+	}
+}
+
+float UGothicChracterStatComponent::GetAttack()
+{
+	ABCHECK(nullptr != CurrentStatData, 0.0f);
+	return CurrentStatData->Attack;
+}
+
 // Called when the game starts
 void UGothicChracterStatComponent::BeginPlay()
 {
