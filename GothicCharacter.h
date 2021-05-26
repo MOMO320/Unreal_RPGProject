@@ -73,6 +73,9 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Stat)
 		class UGothicChracterStatComponent* GothicCharacterStat;
 
+	UPROPERTY(VisibleAnywhere, Category = UI)
+		class UWidgetComponent* HPBarWidget;
+
 	bool isJumpStart;
 private:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))

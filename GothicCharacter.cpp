@@ -6,6 +6,7 @@
 #include "DrawDebugHelpers.h"
 #include "GothicWeapon.h"
 #include "GothicGirlAnimInstance.h"
+#include "Components/WidgetComponent.h"
 
 // Sets default values
 AGothicCharacter::AGothicCharacter()
@@ -16,14 +17,31 @@ AGothicCharacter::AGothicCharacter()
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SPRINGARM"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CAMERA"));
 	GothicCharacterStat = CreateDefaultSubobject<UGothicChracterStatComponent>(TEXT("CHARACTERSTAT"));
+	HPBarWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("HPARWIDGET"));
+	
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	Camera->SetupAttachment(SpringArm);
+	HPBarWidget->SetupAttachment(GetMesh());
 
 	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -88.0f), FRotator(0.0f, -90.0f, 0.0f));
 	SpringArm->TargetArmLength = 250.0f;
 	SpringArm->SetRelativeRotation(FRotator(-20.0f, 0.0f, 0.0f));
 
+	HPBarWidget->SetRelativeLocation(FVector(0.0f, 0.0f, 180.0f));
+	HPBarWidget->SetWidgetSpace(EWidgetSpace::Screen);
+	
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("GothicCharacter"));
+
+	// Widget Finder
+	{
+		static ConstructorHelpers::FClassFinder<UUserWidget> UI_HUD(TEXT("/Game/UI/UI_HPBar.UI_HPBar_C"));
+
+		if (UI_HUD.Succeeded())
+		{
+			HPBarWidget->SetWidgetClass(UI_HUD.Class);
+			HPBarWidget->SetDrawSize(FVector2D(150.0f, 50.0f));
+		}
+	}
 
 	// SkeletalMesh Finder
 	{	
