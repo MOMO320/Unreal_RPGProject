@@ -42,6 +42,8 @@ public:
 	void SetWeapon(class AGothicWeapon* NewWeapon);
 
 private:
+	void ConstructorFinder();
+
 	void UpDown(float NewAxisValue);
 	void LeftRight(float NewAxisValue);
 	void LookUp(float NewAxisValue);

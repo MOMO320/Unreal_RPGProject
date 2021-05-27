@@ -8,6 +8,7 @@
 #include "GothicGirlAnimInstance.h"
 #include "Components/WidgetComponent.h"
 #include "GothicCharacterWidget.h"
+#include "NPCAIcontroller.h"
 
 // Sets default values
 AGothicCharacter::AGothicCharacter()
@@ -30,65 +31,20 @@ AGothicCharacter::AGothicCharacter()
 
 	HPBarWidget->SetRelativeLocation(FVector(0.0f, 0.0f, 180.0f));
 	HPBarWidget->SetWidgetSpace(EWidgetSpace::Screen);
-	
+
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("GothicCharacter"));
+	
+	AIControllerClass = ANPCAIController::StaticClass();
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
-	// Widget Finder
-	{
-		static ConstructorHelpers::FClassFinder<UUserWidget> UI_HUD(TEXT("/Game/UI/UI_HPBar.UI_HPBar_C"));
-
-		if (UI_HUD.Succeeded())
-		{
-			HPBarWidget->SetWidgetClass(UI_HUD.Class);
-			HPBarWidget->SetDrawSize(FVector2D(150.0f, 50.0f));
-		}
-	}
-
-	// SkeletalMesh Finder
-	{	
-		static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_GOTHIC_GIRL(TEXT("/Game/GothicGirl/Character/Meshes/Skin01/SK_GothicGirl_NPRSkin.SK_GothicGirl_NPRSkin"));
-
-		if (SK_GOTHIC_GIRL.Succeeded())
-		{
-			GetMesh()->SetSkeletalMesh(SK_GOTHIC_GIRL.Object);
-		}
-
-		GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
-	}
-
-	// AnimInstance Finder
-	{
-		static ConstructorHelpers::FClassFinder<UAnimInstance> ANIM_GOTHIC_GIRL(TEXT("/Game/BluePrints/BP_GothicAnim.BP_GothicAnim_C"));
-		
-		if (ANIM_GOTHIC_GIRL.Succeeded())
-		{
-			GetMesh()->SetAnimInstanceClass(ANIM_GOTHIC_GIRL.Class);
-		}
-	}
-
-	// Socket Mesh Finder
-	{
-		FName BeltSocket(TEXT("BeltSocket"));
-
-		if (GetMesh()->DoesSocketExist(BeltSocket))
-		{
-			Belt = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("BELT"));
-			static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_BELT(TEXT("/Game/GothicGirl/Weapon/Meshes/SK_Belt.SK_Belt"));
-			if (SK_BELT.Succeeded())
-			{
-				Belt->SetSkeletalMesh(SK_BELT.Object);
-			}
-
-			Belt->SetupAttachment(GetMesh(), BeltSocket);
-		}
-	}
-
+	ConstructorFinder();
 	SetControlMode(0);
 
 	isJumpStart = false;
 	IsAttacking = false;
 
 	MaxCombo = 4;
+
 	AttackEndComboState();
 
 	AttackRange = 200.0f;
@@ -209,6 +165,59 @@ void AGothicCharacter::SetWeapon(AGothicWeapon* NewWeapon)
 		
 		NewWeapon->SetOwner(this);
 		CurrentWeapon = NewWeapon;
+	}
+}
+
+void AGothicCharacter::ConstructorFinder()
+{
+	// Widget Finder
+	{
+		static ConstructorHelpers::FClassFinder<UUserWidget> UI_HUD(TEXT("/Game/UI/UI_HPBar.UI_HPBar_C"));
+
+		if (UI_HUD.Succeeded())
+		{
+			HPBarWidget->SetWidgetClass(UI_HUD.Class);
+			HPBarWidget->SetDrawSize(FVector2D(150.0f, 50.0f));
+		}
+	}
+
+	// SkeletalMesh Finder
+	{
+		static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_GOTHIC_GIRL(TEXT("/Game/GothicGirl/Character/Meshes/Skin01/SK_GothicGirl_NPRSkin.SK_GothicGirl_NPRSkin"));
+
+		if (SK_GOTHIC_GIRL.Succeeded())
+		{
+			GetMesh()->SetSkeletalMesh(SK_GOTHIC_GIRL.Object);
+		}
+
+		GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
+	}
+
+	// AnimInstance Finder
+	{
+		static ConstructorHelpers::FClassFinder<UAnimInstance> ANIM_GOTHIC_GIRL(TEXT("/Game/BluePrints/BP_GothicAnim.BP_GothicAnim_C"));
+
+		if (ANIM_GOTHIC_GIRL.Succeeded())
+		{
+			GetMesh()->SetAnimInstanceClass(ANIM_GOTHIC_GIRL.Class);
+		}
+	}
+
+	// Socket Mesh Finder
+	{
+		FName BeltSocket(TEXT("BeltSocket"));
+
+		if (GetMesh()->DoesSocketExist(BeltSocket))
+		{
+			Belt = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("BELT"));
+			static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_BELT(TEXT("/Game/GothicGirl/Weapon/Meshes/SK_Belt.SK_Belt"));
+			if (SK_BELT.Succeeded())
+			{
+				Belt->SetSkeletalMesh(SK_BELT.Object);
+			}
+
+			Belt->SetupAttachment(GetMesh(), BeltSocket);
+		}
 	}
 }
 
