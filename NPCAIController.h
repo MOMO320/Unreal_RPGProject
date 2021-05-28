@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "RPGGameProject.h"
 #include "AIController.h"
 #include "NPCAIController.generated.h"
 
@@ -13,5 +13,19 @@ UCLASS()
 class RPGGAMEPROJECT_API ANPCAIController : public AAIController
 {
 	GENERATED_BODY()
-	
+
+public:
+	ANPCAIController();
+	virtual void OnPossess(APawn* InPawn) override;
+
+	static const FName HomePosKey;
+	static const FName PatrolPosKey;
+
+private:
+	UPROPERTY()
+		class UBehaviorTree* BTAsset;
+
+	UPROPERTY()
+		class UBlackboardData* BBAsset;
+
 };
