@@ -8,6 +8,7 @@
 
 const FName ANPCAIController::HomePosKey(TEXT("HomePos"));
 const FName ANPCAIController::PatrolPosKey(TEXT("PatrolPos"));
+const FName ANPCAIController::TargetKey(TEXT("Target"));
 
 ANPCAIController::ANPCAIController()
 {
