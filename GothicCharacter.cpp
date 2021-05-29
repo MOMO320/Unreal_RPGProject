@@ -37,8 +37,10 @@ AGothicCharacter::AGothicCharacter()
 	AIControllerClass = ANPCAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
+	CurrentControlMode = EControlMode::GTA;
+
 	ConstructorFinder();
-	SetControlMode(0);
+	SetControlMode(CurrentControlMode);
 
 	isJumpStart = false;
 	IsAttacking = false;
@@ -66,10 +68,14 @@ void AGothicCharacter::BeginPlay()
 
 }
 
-void AGothicCharacter::SetControlMode(int32 ControlMode)
+void AGothicCharacter::SetControlMode(EControlMode NewControlMode)
 {
-	if (ControlMode == 0)
+	CurrentControlMode = NewControlMode;
+	
+	switch (CurrentControlMode)
 	{
+	case EControlMode::GTA :
+
 		SpringArm->TargetArmLength = 450.0f;
 		SpringArm->SetRelativeRotation(FRotator::ZeroRotator);
 		SpringArm->bUsePawnControlRotation = true;
@@ -82,6 +88,15 @@ void AGothicCharacter::SetControlMode(int32 ControlMode)
 		GetCharacterMovement()->bUseControllerDesiredRotation = false;
 		GetCharacterMovement()->RotationRate = FRotator(0.0f, 720.0f, 0.0f);
 		GetCharacterMovement()->JumpZVelocity = 600.0f;
+		break;
+
+	case EControlMode::NPC:
+		bUseControllerRotationYaw = false;
+		GetCharacterMovement()->bUseControllerDesiredRotation = false;
+		GetCharacterMovement()->bOrientRotationToMovement = true;
+		GetCharacterMovement()->RotationRate = FRotator(0.0f, 480.0f, 0.0f);
+		break;
+
 	}
 }
 
@@ -136,6 +151,22 @@ void AGothicCharacter::PostInitializeComponents()
 		GothicGirlAnim->SetDeadAnim();
 		SetActorEnableCollision(false);
 		});
+}
+
+void AGothicCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	if (IsPlayerControlled())
+	{
+		SetControlMode(EControlMode::GTA);
+		GetCharacterMovement()->MaxWalkSpeed = 600.0f;
+	}
+	else
+	{
+		SetControlMode(EControlMode::NPC);
+		GetCharacterMovement()->MaxWalkSpeed = 300.0f;
+	}
 }
 
 float AGothicCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)

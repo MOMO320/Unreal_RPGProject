@@ -24,7 +24,13 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	void SetControlMode(int32 ControlMode);
+	enum class EControlMode
+	{
+		GTA,
+		NPC
+	};
+
+	void SetControlMode(EControlMode NewControlMode);
 
 public:	
 	// Called every frame
@@ -34,6 +40,8 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	virtual void PostInitializeComponents() override;
+
+	virtual void PossessedBy(AController* NewController) override;
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	
@@ -56,6 +64,8 @@ private:
 	void AttackStartComboState();
 	void AttackEndComboState();
 	void AttackCheck();
+
+	EControlMode CurrentControlMode;
 
 
 public:
