@@ -274,7 +274,6 @@ void AGothicCharacter::Turn(float NewAxisValue)
 
 void AGothicCharacter::Attack()
 {
-	
 	if (IsAttacking)
 	{
 		ABCHECK(FMath::IsWithinInclusive<int32>(CurrentCombo, 1, MaxCombo));
@@ -300,6 +299,7 @@ void AGothicCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterru
 	ABCHECK(CurrentCombo > 0);
 	IsAttacking =false;
 	AttackEndComboState();
+	OnAttackEnd.Broadcast();
 }
 
 void AGothicCharacter::AttackStartComboState()

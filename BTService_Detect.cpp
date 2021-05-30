@@ -57,7 +57,7 @@ void UBTService_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 
 				DrawDebugPoint(World, GothicCharacter->GetActorLocation(), 10.0f, FColor::Blue, false, 0.2f);
 				DrawDebugLine(World, ControllingPawn->GetActorLocation(), GothicCharacter->GetActorLocation(), FColor::Blue, false, 0.2f);
-				UE_LOG(LogTemp, Warning, TEXT("°¨Áö ‰ç¾î!"));
+				UE_LOG(LogTemp, Warning, TEXT(" Find! "));
 				return;
 			}
 		}

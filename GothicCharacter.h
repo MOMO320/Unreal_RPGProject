@@ -10,6 +10,7 @@
 #include "Engine/Classes/Components/CapsuleComponent.h"
 #include "GothicCharacter.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FOnAttackEndDelegate);
 
 UCLASS()
 class RPGGAMEPROJECT_API AGothicCharacter : public ACharacter
@@ -56,7 +57,6 @@ private:
 	void LeftRight(float NewAxisValue);
 	void LookUp(float NewAxisValue);
 	void Turn(float NewAxisValue);
-	void Attack();
 
 	UFUNCTION()
 		void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
@@ -87,6 +87,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = UI)
 		class UWidgetComponent* HPBarWidget;
+
+	void Attack();
+	FOnAttackEndDelegate OnAttackEnd;
 
 	bool isJumpStart;
 private:
