@@ -9,12 +9,25 @@
 #include "Components/WidgetComponent.h"
 #include "GothicCharacterWidget.h"
 #include "NPCAIcontroller.h"
+#include "GothicCharacterSetting.h"
+#include "RPGGameInstance.h"
 
 // Sets default values
 AGothicCharacter::AGothicCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	auto DefaultSetting = GetDefault<UGothicCharacterSetting>();
+
+	//ABLOG(Error, TEXT("Character Asset Count : %s"), DefaultSetting->CharacterAssets.Num());
+	if (DefaultSetting->CharacterAssets.Num() > 0)
+	{
+		for (auto CharacterAsset : DefaultSetting->CharacterAssets)
+		{
+			ABLOG(Warning, TEXT("Character Asset : %s"), *CharacterAsset.ToString());
+		}
+	}
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SPRINGARM"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CAMERA"));
@@ -58,6 +71,22 @@ AGothicCharacter::AGothicCharacter()
 void AGothicCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (!IsPlayerControlled())
+	{
+		auto DefaultSetting = GetDefault<UGothicCharacterSetting>();
+		int32 RandIndex = FMath::RandRange(0, DefaultSetting->CharacterAssets.Num() - 1);
+
+		CharacterAssetToLoad = DefaultSetting->CharacterAssets[RandIndex];
+
+		auto RPGGameInstance = Cast<URPGGameInstance>(GetGameInstance());
+
+		if (nullptr != RPGGameInstance)
+		{
+			AssetStreamingHandle = RPGGameInstance->StreamableManager.RequestAsyncLoad(
+				CharacterAssetToLoad, FStreamableDelegate::CreateUObject(this, &AGothicCharacter::OnAssetLoadCompleted));
+		}
+	}
 
 	auto CharacterWidget = Cast<UGothicCharacterWidget>(HPBarWidget->GetUserWidgetObject());
 
@@ -249,6 +278,18 @@ void AGothicCharacter::ConstructorFinder()
 
 			Belt->SetupAttachment(GetMesh(), BeltSocket);
 		}
+	}
+}
+
+void AGothicCharacter::OnAssetLoadCompleted()
+{
+	USkeletalMesh* AssetLoaded = Cast<USkeletalMesh>(AssetStreamingHandle->GetLoadedAsset());
+
+	AssetStreamingHandle.Reset();
+
+	if (nullptr != AssetLoaded)
+	{
+		GetMesh()->SetSkeletalMesh(AssetLoaded);
 	}
 }
 
