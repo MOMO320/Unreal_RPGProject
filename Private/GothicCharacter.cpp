@@ -12,6 +12,7 @@
 #include "GothicCharacterSetting.h"
 #include "RPGPlayerController.h"
 #include "RPGGameInstance.h"
+#include "RPGPlayerState.h"
 
 // Sets default values
 AGothicCharacter::AGothicCharacter()
@@ -277,6 +278,11 @@ void AGothicCharacter::SetCharacterState(ECharacterState NewState)
 		if (bIsPlayer)
 		{
 			DisableInput(GothicCharacterController);
+
+			auto RPGPlayerState = Cast<ARPGPlayerState>(GetPlayerState());
+			ABCHECK(nullptr != RPGPlayerState);
+			GothicCharacterStat->SetNewLevel(RPGPlayerState->GetCharacterLevel());
+
 		}
 		SetActorHiddenInGame(true);
 		HPBarWidget->SetHiddenInGame(true);

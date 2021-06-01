@@ -13,3 +13,12 @@ ARPGGameProjectGameModeBase::ARPGGameProjectGameModeBase()
 	PlayerControllerClass = ARPGPlayerController::StaticClass();
 	PlayerStateClass = ARPGPlayerState::StaticClass();
 }
+
+void ARPGGameProjectGameModeBase::PostLogin(APlayerController* NewPlayer)
+{
+	Super::PostLogin(NewPlayer);
+
+	auto RPGPlayerState = Cast<ARPGPlayerState>(NewPlayer->PlayerState);
+	ABCHECK(nullptr != RPGPlayerState);
+	RPGPlayerState->InitPlayerData();
+}
