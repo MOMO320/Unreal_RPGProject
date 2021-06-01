@@ -13,6 +13,7 @@
 #include "RPGPlayerController.h"
 #include "RPGGameInstance.h"
 #include "RPGPlayerState.h"
+#include "UserHDWidget.h"
 
 // Sets default values
 AGothicCharacter::AGothicCharacter()
@@ -110,28 +111,31 @@ void AGothicCharacter::BeginPlay()
 	AssetStreamingHandle = RpgGameInstance->StreamableManager.RequestAsyncLoad(CharacterAssetToLoad, FStreamableDelegate::CreateUObject(this, &AGothicCharacter::OnAssetLoadCompleted));
 	SetCharacterState(ECharacterState::LOADING);
 
-	//if (!IsPlayerControlled())
-	//{
-	//	auto DefaultSetting = GetDefault<UGothicCharacterSetting>();
-	//	int32 RandIndex = FMath::RandRange(0, DefaultSetting->CharacterAssets.Num() - 1);
-	//
-	//	CharacterAssetToLoad = DefaultSetting->CharacterAssets[RandIndex];
-	//
-	//	auto RPGGameInstance = Cast<URPGGameInstance>(GetGameInstance());
-	//
-	//	if (nullptr != RPGGameInstance)
-	//	{
-	//		AssetStreamingHandle = RPGGameInstance->StreamableManager.RequestAsyncLoad(
-	//			CharacterAssetToLoad, FStreamableDelegate::CreateUObject(this, &AGothicCharacter::OnAssetLoadCompleted));
-	//	}
-	//}
-	//
-	//auto CharacterWidget = Cast<UGothicCharacterWidget>(HPBarWidget->GetUserWidgetObject());
-	//
-	//if (nullptr != CharacterWidget)
-	//{
-	//	CharacterWidget->BindCharaceterStat(GothicCharacterStat);
-	//}
+	// ¡÷ºÆ
+	{
+		//if (!IsPlayerControlled())
+		//{
+		//	auto DefaultSetting = GetDefault<UGothicCharacterSetting>();
+		//	int32 RandIndex = FMath::RandRange(0, DefaultSetting->CharacterAssets.Num() - 1);
+		//
+		//	CharacterAssetToLoad = DefaultSetting->CharacterAssets[RandIndex];
+		//
+		//	auto RPGGameInstance = Cast<URPGGameInstance>(GetGameInstance());
+		//
+		//	if (nullptr != RPGGameInstance)
+		//	{
+		//		AssetStreamingHandle = RPGGameInstance->StreamableManager.RequestAsyncLoad(
+		//			CharacterAssetToLoad, FStreamableDelegate::CreateUObject(this, &AGothicCharacter::OnAssetLoadCompleted));
+		//	}
+		//}
+		//
+		//auto CharacterWidget = Cast<UGothicCharacterWidget>(HPBarWidget->GetUserWidgetObject());
+		//
+		//if (nullptr != CharacterWidget)
+		//{
+		//	CharacterWidget->BindCharaceterStat(GothicCharacterStat);
+		//}
+	}
 
 }
 
@@ -278,6 +282,8 @@ void AGothicCharacter::SetCharacterState(ECharacterState NewState)
 		if (bIsPlayer)
 		{
 			DisableInput(GothicCharacterController);
+
+			GothicCharacterController->GetUserHUDWidget()->BindCharacterStat(GothicCharacterStat);
 
 			auto RPGPlayerState = Cast<ARPGPlayerState>(GetPlayerState());
 			ABCHECK(nullptr != RPGPlayerState);

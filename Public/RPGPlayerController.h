@@ -15,8 +15,21 @@ class RPGGAMEPROJECT_API ARPGPlayerController : public APlayerController
 	GENERATED_BODY()
 
 public:
+	ARPGPlayerController();
+
 	virtual void PostInitializeComponents() override;
-	
+
+	class UUserHDWidget* GetUserHUDWidget() const;
+
 protected:
 	virtual void BeginPlay() override;
+	virtual void SetupInputComponent() override;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
+		TSubclassOf<class UUserHDWidget> HUDWidgetClass;
+
+
+private:
+	UPROPERTY()
+		class UUserHDWidget* HUDWidget;
 };
