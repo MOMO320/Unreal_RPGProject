@@ -50,6 +50,9 @@ public:
 	
 	void SetWeapon(class AGothicWeapon* NewWeapon);
 
+	void SetCharacterState(ECharacterState NewState);
+	ECharacterState GetCharacterState() const;
+
 private:
 	void ConstructorFinder();
 	void OnAssetLoadCompleted();
@@ -120,4 +123,23 @@ private:
 
 	FSoftObjectPath CharacterAssetToLoad = FSoftObjectPath(nullptr);
 	TSharedPtr<struct FStreamableHandle> AssetStreamingHandle;
+
+	UPROPERTY(Transient, VisibleInstanceOnly, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
+		ECharacterState CurrentState;
+
+	UPROPERTY(Transient, VisibleInstanceOnly, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
+		bool bIsPlayer;
+
+	UPROPERTY()
+		class ANPCAIController* NPCAIController;
+
+	UPROPERTY()
+		class ARPGPlayerController* GothicCharacterController;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = State, Meta = (AllowPrivateAccess = true))
+		float DeadTimer;
+
+	FTimerHandle DeatTimerHandle = {};
+
+	int32 AssetIndex = 0;
 };

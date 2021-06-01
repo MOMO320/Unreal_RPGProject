@@ -10,6 +10,7 @@
 #include "GothicCharacterWidget.h"
 #include "NPCAIcontroller.h"
 #include "GothicCharacterSetting.h"
+#include "RPGPlayerController.h"
 #include "RPGGameInstance.h"
 
 // Sets default values
@@ -65,6 +66,13 @@ AGothicCharacter::AGothicCharacter()
 	AttackRange = 200.0f;
 	AttackRadius = 50.0f;
 
+	AssetIndex = 1;
+
+	SetActorHiddenInGame(true);
+	HPBarWidget->SetHiddenInGame(true);
+	SetCanBeDamaged(false);
+
+	DeadTimer = 5.0f;
 }
 
 // Called when the game starts or when spawned
@@ -72,28 +80,57 @@ void AGothicCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!IsPlayerControlled())
+	bIsPlayer = IsPlayerControlled();
+	if (bIsPlayer)
 	{
-		auto DefaultSetting = GetDefault<UGothicCharacterSetting>();
-		int32 RandIndex = FMath::RandRange(0, DefaultSetting->CharacterAssets.Num() - 1);
-
-		CharacterAssetToLoad = DefaultSetting->CharacterAssets[RandIndex];
-
-		auto RPGGameInstance = Cast<URPGGameInstance>(GetGameInstance());
-
-		if (nullptr != RPGGameInstance)
-		{
-			AssetStreamingHandle = RPGGameInstance->StreamableManager.RequestAsyncLoad(
-				CharacterAssetToLoad, FStreamableDelegate::CreateUObject(this, &AGothicCharacter::OnAssetLoadCompleted));
-		}
+		GothicCharacterController = Cast<ARPGPlayerController>(GetController());
+		ABCHECK(nullptr != GothicCharacterController);
+	}
+	else
+	{
+		NPCAIController = Cast<ANPCAIController>(GetController());
+		ABCHECK(nullptr != NPCAIController);
 	}
 
-	auto CharacterWidget = Cast<UGothicCharacterWidget>(HPBarWidget->GetUserWidgetObject());
+	auto DefaultSetting = GetDefault<UGothicCharacterSetting>();
 
-	if (nullptr != CharacterWidget)
+	if (bIsPlayer)
 	{
-		CharacterWidget->BindCharaceterStat(GothicCharacterStat);
+		AssetIndex = 1;
 	}
+	else
+	{
+		AssetIndex = FMath::RandRange(0, DefaultSetting->CharacterAssets.Num() - 1);
+	}
+
+	CharacterAssetToLoad = DefaultSetting->CharacterAssets[AssetIndex];
+	auto RpgGameInstance = Cast<URPGGameInstance>(GetGameInstance());
+	ABCHECK(nullptr != RpgGameInstance);
+	AssetStreamingHandle = RpgGameInstance->StreamableManager.RequestAsyncLoad(CharacterAssetToLoad, FStreamableDelegate::CreateUObject(this, &AGothicCharacter::OnAssetLoadCompleted));
+	SetCharacterState(ECharacterState::LOADING);
+
+	//if (!IsPlayerControlled())
+	//{
+	//	auto DefaultSetting = GetDefault<UGothicCharacterSetting>();
+	//	int32 RandIndex = FMath::RandRange(0, DefaultSetting->CharacterAssets.Num() - 1);
+	//
+	//	CharacterAssetToLoad = DefaultSetting->CharacterAssets[RandIndex];
+	//
+	//	auto RPGGameInstance = Cast<URPGGameInstance>(GetGameInstance());
+	//
+	//	if (nullptr != RPGGameInstance)
+	//	{
+	//		AssetStreamingHandle = RPGGameInstance->StreamableManager.RequestAsyncLoad(
+	//			CharacterAssetToLoad, FStreamableDelegate::CreateUObject(this, &AGothicCharacter::OnAssetLoadCompleted));
+	//	}
+	//}
+	//
+	//auto CharacterWidget = Cast<UGothicCharacterWidget>(HPBarWidget->GetUserWidgetObject());
+	//
+	//if (nullptr != CharacterWidget)
+	//{
+	//	CharacterWidget->BindCharaceterStat(GothicCharacterStat);
+	//}
 
 }
 
@@ -228,6 +265,94 @@ void AGothicCharacter::SetWeapon(AGothicWeapon* NewWeapon)
 	}
 }
 
+void AGothicCharacter::SetCharacterState(ECharacterState NewState)
+{
+	ABCHECK(CurrentState != NewState);
+	CurrentState = NewState;
+
+	switch (CurrentState)
+	{
+	case ECharacterState::LOADING:
+	{
+		if (bIsPlayer)
+		{
+			DisableInput(GothicCharacterController);
+		}
+		SetActorHiddenInGame(true);
+		HPBarWidget->SetHiddenInGame(true);
+		SetCanBeDamaged(false);
+		break;
+	}
+
+	case ECharacterState::READY:
+	{
+
+		SetActorHiddenInGame(false);
+		HPBarWidget->SetHiddenInGame(false);
+		SetCanBeDamaged(true);
+
+		GothicCharacterStat->OnHPIsZero.AddLambda([this]()-> void {
+			SetCharacterState(ECharacterState::DEAD);
+		});
+
+		auto GothicCharacterWidget = Cast<UGothicCharacterWidget>(HPBarWidget->GetUserWidgetObject());
+		ABCHECK(nullptr != GothicCharacterWidget);
+		GothicCharacterWidget->BindCharaceterStat(GothicCharacterStat);
+
+		if (bIsPlayer)
+		{
+			SetControlMode(EControlMode::GTA);
+			GetCharacterMovement()->MaxWalkSpeed = 600.0f;
+			EnableInput(GothicCharacterController);
+		}
+		else
+		{
+			SetControlMode(EControlMode::NPC);
+			GetCharacterMovement()->MaxWalkSpeed = 400.0f;
+			NPCAIController->RunAI();
+		}
+
+		break;
+	}
+
+	case ECharacterState::DEAD:
+	{
+		SetActorEnableCollision(false);
+		GetMesh()->SetHiddenInGame(false);
+		HPBarWidget->SetHiddenInGame(true);
+		SetCanBeDamaged(false);
+		
+		if (bIsPlayer)
+		{
+			DisableInput(GothicCharacterController);
+		}
+		else
+		{
+			NPCAIController->StopAI();
+		}
+
+		GetWorld()->GetTimerManager().SetTimer(DeatTimerHandle, FTimerDelegate::CreateLambda([this]()->void {
+			
+			if (bIsPlayer)
+			{
+				GothicCharacterController->RestartLevel();
+			}
+			else
+			{
+				Destroy();
+			}}), DeadTimer, false);
+
+		break;
+	}
+	}
+}
+
+
+ECharacterState AGothicCharacter::GetCharacterState() const
+{
+	return CurrentState;
+}
+
 void AGothicCharacter::ConstructorFinder()
 {
 	// Widget Finder
@@ -287,10 +412,12 @@ void AGothicCharacter::OnAssetLoadCompleted()
 
 	AssetStreamingHandle.Reset();
 
-	if (nullptr != AssetLoaded)
-	{
-		GetMesh()->SetSkeletalMesh(AssetLoaded);
-	}
+	ABCHECK(nullptr != AssetLoaded);
+
+	GetMesh()->SetSkeletalMesh(AssetLoaded);
+	
+	SetCharacterState(ECharacterState::READY);
+	
 }
 
 void AGothicCharacter::UpDown(float NewAxisValue)
