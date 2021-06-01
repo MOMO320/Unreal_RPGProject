@@ -248,6 +248,16 @@ float AGothicCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	
 	GothicCharacterStat->SetDamage(FinalDamage);
 
+	if (CurrentState == ECharacterState::DEAD)
+	{
+		if (EventInstigator->IsPlayerController())
+		{
+			auto RPGPlayerController = Cast<ARPGPlayerController>(EventInstigator);
+			ABCHECK(nullptr != RPGPlayerController, 0.0f);
+			RPGPlayerController->NPCKill(this);
+		}
+	}
+
 	return FinalDamage;
 }
 
@@ -363,6 +373,11 @@ void AGothicCharacter::SetCharacterState(ECharacterState NewState)
 ECharacterState AGothicCharacter::GetCharacterState() const
 {
 	return CurrentState;
+}
+
+int32 AGothicCharacter::GetExp() const
+{
+	return GothicCharacterStat->GetDropExp();
 }
 
 void AGothicCharacter::ConstructorFinder()

@@ -18,8 +18,8 @@ public:
 	ARPGPlayerController();
 
 	virtual void PostInitializeComponents() override;
-
 	class UUserHDWidget* GetUserHUDWidget() const;
+	void NPCKill(class AGothicCharacter* KilledNPC) const;
 
 protected:
 	virtual void BeginPlay() override;
@@ -32,4 +32,7 @@ protected:
 private:
 	UPROPERTY()
 		class UUserHDWidget* HUDWidget;
+
+	UPROPERTY()
+		class ARPGPlayerState* RPGPlayerState;
 };

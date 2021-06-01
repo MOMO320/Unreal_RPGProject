@@ -4,6 +4,7 @@
 #include "RPGPlayerController.h"
 #include "UserHDWidget.h"
 #include "RPGPlayerState.h"
+#include "GothicCharacter.h"
 
 ARPGPlayerController::ARPGPlayerController()
 {
@@ -25,6 +26,11 @@ UUserHDWidget* ARPGPlayerController::GetUserHUDWidget() const
 	return HUDWidget;
 }
 
+void ARPGPlayerController::NPCKill(AGothicCharacter* KilledNPC) const
+{
+	RPGPlayerState->AddExp(KilledNPC->GetExp());
+}
+
 void ARPGPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -35,7 +41,8 @@ void ARPGPlayerController::BeginPlay()
 	HUDWidget = CreateWidget<UUserHDWidget>(this, HUDWidgetClass);
 	HUDWidget->AddToViewport();
 
-	auto RPGPlayerState = Cast<ARPGPlayerState>(PlayerState);
+
+	RPGPlayerState = Cast<ARPGPlayerState>(PlayerState);
 	ABCHECK(nullptr != RPGPlayerState);
 	HUDWidget->BindPlayerState(RPGPlayerState);
 	RPGPlayerState->OnPlayerStateChanged.Broadcast();

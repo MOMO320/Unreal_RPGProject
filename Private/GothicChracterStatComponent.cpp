@@ -54,13 +54,18 @@ void UGothicChracterStatComponent::SetHP(float NewHP)
 	}
 }
 
-float UGothicChracterStatComponent::GetAttack()
+int32 UGothicChracterStatComponent::GetDropExp() const
+{
+	return CurrentStatData->DropExp;
+}
+
+float UGothicChracterStatComponent::GetAttack() const
 {
 	ABCHECK(nullptr != CurrentStatData, 0.0f);
 	return CurrentStatData->Attack;
 }
 
-float UGothicChracterStatComponent::GetHPRatio()
+float UGothicChracterStatComponent::GetHPRatio() const
 {
 	ABCHECK(nullptr != CurrentStatData, 0.0f);
 

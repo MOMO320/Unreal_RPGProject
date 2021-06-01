@@ -56,6 +56,7 @@ void UUserHDWidget::UpdatePlayerState()
 {
 	ABCHECK(CurrentRPGPlayerState.IsValid());
 
+	ExpBar->SetPercent(CurrentRPGPlayerState->GetExpRatio());
 	PlayerName->SetText(FText::FromString(CurrentRPGPlayerState->GetPlayerName()));
 	PlayerLevel->SetText(FText::FromString(FString::FromInt(CurrentRPGPlayerState->GetCharacterLevel())));
 	CurrentScore->SetText(FText::FromString(FString::FromInt(CurrentRPGPlayerState->GetGameScore())));

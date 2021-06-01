@@ -51,7 +51,10 @@ public:
 	void SetWeapon(class AGothicWeapon* NewWeapon);
 
 	void SetCharacterState(ECharacterState NewState);
+
 	ECharacterState GetCharacterState() const;
+
+	int32 GetExp() const;
 
 private:
 	void ConstructorFinder();
