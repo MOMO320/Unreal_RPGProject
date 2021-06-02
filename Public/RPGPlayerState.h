@@ -28,6 +28,8 @@ public:
 
 	FOnPlayerStateChangedDelegate OnPlayerStateChanged;
 
+	void AddGameScore();
+
 protected:
 	UPROPERTY(Transient)
 		int32 GameScore;

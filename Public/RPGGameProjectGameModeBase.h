@@ -16,7 +16,13 @@ class RPGGAMEPROJECT_API ARPGGameProjectGameModeBase : public AGameModeBase
 
 public :
 	ARPGGameProjectGameModeBase();
-	virtual  void PostLogin(APlayerController* NewPlayer) override;
 
+	virtual void PostInitializeComponents() override;
+	virtual  void PostLogin(APlayerController* NewPlayer) override;
+	void AddScore(class ARPGPlayerController* ScoredPlayer);
+
+private:
+	UPROPERTY()
+		class ARPGGameState* RPGGameState;
 
 };

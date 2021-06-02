@@ -4,6 +4,8 @@
 #include "ABSection.h"
 #include "GothicCharacter.h"
 #include "ItemBox.h"
+#include "RPGPlayerController.h"
+#include "RPGGameProjectGameModeBase.h"
 
 // Sets default values
 AABSection::AABSection()
@@ -187,6 +189,28 @@ void AABSection::OnGateTriggerBeginOverlap(UPrimitiveComponent* OverlappedCompon
 
 void AABSection::OnNPCSpawn()
 {
-	GetWorld()->SpawnActor<AGothicCharacter>(GetActorLocation() + FVector::UpVector * 88.0f, FRotator::ZeroRotator);
+	GetWorld()->GetTimerManager().ClearTimer(SpawnNPCTimerHandle);
+	auto KeyNPC = GetWorld()->SpawnActor<AGothicCharacter>(GetActorLocation() + FVector::UpVector * 88.0f, FRotator::ZeroRotator);
+
+	if (nullptr != KeyNPC)
+	{
+		KeyNPC->OnDestroyed.AddDynamic(this, &AABSection::OnKeyNPCDestroyed);
+	}
+}
+
+void AABSection::OnKeyNPCDestroyed(AActor* DestroyedActor)
+{
+	auto GothicCharacter = Cast<AGothicCharacter>(DestroyedActor);
+	ABCHECK(nullptr != GothicCharacter);
+
+	auto RPGPlayerController = Cast<ARPGPlayerController>(GothicCharacter->LastHitBy);
+	ABCHECK(nullptr != RPGPlayerController);
+
+	auto RPGGameMode = Cast<ARPGGameProjectGameModeBase>(GetWorld()->GetAuthGameMode());
+	ABCHECK(nullptr != RPGGameMode);
+
+	RPGGameMode->AddScore(RPGPlayerController);
+
+	SetState(ESectionState::COMPLETE);
 }
 

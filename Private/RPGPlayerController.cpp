@@ -31,6 +31,11 @@ void ARPGPlayerController::NPCKill(AGothicCharacter* KilledNPC) const
 	RPGPlayerState->AddExp(KilledNPC->GetExp());
 }
 
+void ARPGPlayerController::AddGameScore() const
+{
+	RPGPlayerState->AddGameScore();
+}
+
 void ARPGPlayerController::BeginPlay()
 {
 	Super::BeginPlay();

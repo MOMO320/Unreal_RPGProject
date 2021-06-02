@@ -58,6 +58,12 @@ void ARPGPlayerState::InitPlayerData()
 	Exp = 0;
 }
 
+void ARPGPlayerState::AddGameScore()
+{
+	GameScore++;
+	OnPlayerStateChanged.Broadcast();
+}
+
 void ARPGPlayerState::SetCharacterLevel(int32 newCharacterLevel)
 {
 	auto RPGGameInstance = Cast<URPGGameInstance>(GetGameInstance());

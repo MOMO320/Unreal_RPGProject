@@ -40,6 +40,9 @@ private:
 
 	void OnNPCSpawn();
 
+	UFUNCTION()
+		void OnKeyNPCDestroyed(AActor* DestroyedActor);
+
 private:
 	ESectionState CurrentState = ESectionState::READY;
 

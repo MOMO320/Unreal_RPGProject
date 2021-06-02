@@ -20,6 +20,7 @@ public:
 	virtual void PostInitializeComponents() override;
 	class UUserHDWidget* GetUserHUDWidget() const;
 	void NPCKill(class AGothicCharacter* KilledNPC) const;
+	void AddGameScore() const;
 
 protected:
 	virtual void BeginPlay() override;
