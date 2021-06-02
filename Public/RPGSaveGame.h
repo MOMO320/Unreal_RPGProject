@@ -20,6 +20,9 @@ public:
 public:
 
 	UPROPERTY()
+		int32 CharacterIndex;
+
+	UPROPERTY()
 		int32 Level;
 
 	UPROPERTY()

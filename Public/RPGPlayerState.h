@@ -22,6 +22,8 @@ public:
 	int32 GetGameScore() const;
 	int32	GetCharacterLevel() const;
 	int32 GetGameHighScore() const;
+	int32 GetCharacterIndex() const;
+
 	float GetExpRatio() const;
 	bool AddExp(int32 IncomeExp);
 
@@ -48,6 +50,9 @@ protected:
 
 	UPROPERTY(Transient)
 		int32 GameHighScore;
+
+	UPROPERTY(Transient)
+		int32 CharacterIndex;
 
 private:
 	void SetCharacterLevel(int32 newCharacterLevel);

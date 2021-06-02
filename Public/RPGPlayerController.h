@@ -21,6 +21,7 @@ public:
 	class UUserHDWidget* GetUserHUDWidget() const;
 	void NPCKill(class AGothicCharacter* KilledNPC) const;
 	void AddGameScore() const;
+	void ChangeInputMode(bool bGameMode = true);
 
 protected:
 	virtual void BeginPlay() override;
@@ -29,6 +30,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
 		TSubclassOf<class UUserHDWidget> HUDWidgetClass;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
+		TSubclassOf<class UGamePlayWidget> MenuWidgetClass;
+
+private:
+	void OnGamePause();
 
 private:
 	UPROPERTY()
@@ -36,4 +42,11 @@ private:
 
 	UPROPERTY()
 		class ARPGPlayerState* RPGPlayerState;
+
+	UPROPERTY()
+		class UGamePlayWidget* MenuWidget;
+
+	FInputModeGameOnly GameInputMode;
+	FInputModeUIOnly UIInputMode;
+
 };

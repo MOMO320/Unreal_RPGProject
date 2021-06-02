@@ -5,6 +5,7 @@
 
 URPGSaveGame::URPGSaveGame()
 {
+	CharacterIndex = 0;
 	Level = 1;
 	Exp = 0;
 	PlayerName = TEXT("Guest");

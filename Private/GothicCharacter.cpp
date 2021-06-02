@@ -99,7 +99,9 @@ void AGothicCharacter::BeginPlay()
 
 	if (bIsPlayer)
 	{
-		AssetIndex = 1;
+		auto RPGPlayerState = Cast<ARPGPlayerState>(GetPlayerState());
+		ABCHECK(nullptr != RPGPlayerState);
+		AssetIndex = RPGPlayerState->GetCharacterIndex();
 	}
 	else
 	{
@@ -318,6 +320,7 @@ void AGothicCharacter::SetCharacterState(ECharacterState NewState)
 			ABLOG(Warning, TEXT("New NPC Level : %d"), FinalLevel);
 			GothicCharacterStat->SetNewLevel(FinalLevel);
 		}
+
 		SetActorHiddenInGame(true);
 		HPBarWidget->SetHiddenInGame(true);
 		SetCanBeDamaged(false);

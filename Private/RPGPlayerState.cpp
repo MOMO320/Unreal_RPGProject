@@ -11,6 +11,7 @@ ARPGPlayerState::ARPGPlayerState()
 	GameScore = 0;
 	GameHighScore = 0;
 	Exp = 0;
+	CharacterIndex = 0;
 	SaveSlotName = TEXT("Player1");
 }
 
@@ -27,6 +28,11 @@ int32 ARPGPlayerState::GetCharacterLevel() const
 int32 ARPGPlayerState::GetGameHighScore() const
 {
 	return GameHighScore;
+}
+
+int32 ARPGPlayerState::GetCharacterIndex() const
+{
+	return CharacterIndex;
 }
 
 float ARPGPlayerState::GetExpRatio() const
@@ -72,6 +78,7 @@ void ARPGPlayerState::InitPlayerData()
 	GameScore = 0;
 	GameHighScore = RPGSaveGame->HighScore;
 	Exp = RPGSaveGame->Exp;
+	CharacterIndex = RPGSaveGame->CharacterIndex;
 	SavePlayerData();
 }
 
@@ -82,6 +89,7 @@ void ARPGPlayerState::SavePlayerData()
 	NewPlayerData->Level = CharacterLevel;
 	NewPlayerData->Exp = Exp;
 	NewPlayerData->HighScore = GameHighScore;
+	NewPlayerData->CharacterIndex = CharacterIndex;
 
 	if (!UGameplayStatics::SaveGameToSlot(NewPlayerData, SaveSlotName, 0))
 	{

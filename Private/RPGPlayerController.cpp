@@ -5,6 +5,7 @@
 #include "UserHDWidget.h"
 #include "RPGPlayerState.h"
 #include "GothicCharacter.h"
+#include "GamePlayWidget.h"
 
 ARPGPlayerController::ARPGPlayerController()
 {
@@ -13,6 +14,13 @@ ARPGPlayerController::ARPGPlayerController()
 	if (UI_HUD_C.Succeeded())
 	{
 		HUDWidgetClass = UI_HUD_C.Class;
+	}
+
+	static ConstructorHelpers::FClassFinder<UGamePlayWidget> UI_MENU_C(TEXT("/Game/Book/UI/UI_Menu.UI_Menu_C"));
+
+	if (UI_MENU_C.Succeeded())
+	{
+		MenuWidgetClass = UI_MENU_C.Class;
 	}
 }
 
@@ -36,16 +44,32 @@ void ARPGPlayerController::AddGameScore() const
 	RPGPlayerState->AddGameScore();
 }
 
+void ARPGPlayerController::ChangeInputMode(bool bGameMode)
+{
+	if (bGameMode)
+	{
+		SetInputMode(GameInputMode);
+		bShowMouseCursor = false;
+	}
+	else
+	{
+		SetInputMode(UIInputMode);
+		bShowMouseCursor = true;
+	}
+}
+
 void ARPGPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+		
+	ChangeInputMode(true);
 
 	FInputModeGameOnly InputMode;
 	SetInputMode(InputMode);
 
 	HUDWidget = CreateWidget<UUserHDWidget>(this, HUDWidgetClass);
-	HUDWidget->AddToViewport();
-
+	ABCHECK(nullptr != HUDWidget);
+	HUDWidget->AddToViewport(1);
 
 	RPGPlayerState = Cast<ARPGPlayerState>(PlayerState);
 	ABCHECK(nullptr != RPGPlayerState);
@@ -56,4 +80,16 @@ void ARPGPlayerController::BeginPlay()
 
 void ARPGPlayerController::SetupInputComponent()
 {
+	Super::SetupInputComponent();
+	InputComponent->BindAction(TEXT("GamePause"), EInputEvent::IE_Pressed, this, &ARPGPlayerController::OnGamePause);
+}
+
+void ARPGPlayerController::OnGamePause()
+{
+	MenuWidget = CreateWidget<UGamePlayWidget>(this, MenuWidgetClass);
+	ABCHECK(nullptr != MenuWidget);
+	MenuWidget->AddToViewport(3);
+
+	SetPause(true);
+	ChangeInputMode(false);
 }
