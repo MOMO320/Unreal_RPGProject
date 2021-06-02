@@ -56,6 +56,8 @@ public:
 
 	int32 GetExp() const;
 
+	float GetFinalAttackRange() const;
+
 private:
 	void ConstructorFinder();
 	void OnAssetLoadCompleted();

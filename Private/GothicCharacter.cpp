@@ -65,7 +65,7 @@ AGothicCharacter::AGothicCharacter()
 
 	AttackEndComboState();
 
-	AttackRange = 200.0f;
+	AttackRange = 80.0f;
 	AttackRadius = 50.0f;
 
 	AssetIndex = 1;
@@ -263,14 +263,22 @@ float AGothicCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 
 bool AGothicCharacter::CanSetWeapon()
 {
-	return (nullptr == CurrentWeapon);
+	return true;
 }
 
 void AGothicCharacter::SetWeapon(AGothicWeapon* NewWeapon)
 {
-	ABCHECK(nullptr != NewWeapon && nullptr == CurrentWeapon);
-	FName WeaponSocket(TEXT("WeaponSocket"));
 
+	ABCHECK(nullptr != NewWeapon);
+	
+	if (nullptr != CurrentWeapon)
+	{
+		CurrentWeapon->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+		CurrentWeapon->Destroy();
+		CurrentWeapon = nullptr;
+	}
+	
+	FName WeaponSocket(TEXT("WeaponSocket"));
 	if (nullptr != NewWeapon)
 	{
 		NewWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponSocket);
@@ -378,6 +386,11 @@ ECharacterState AGothicCharacter::GetCharacterState() const
 int32 AGothicCharacter::GetExp() const
 {
 	return GothicCharacterStat->GetDropExp();
+}
+
+float AGothicCharacter::GetFinalAttackRange() const
+{
+	return (nullptr != CurrentWeapon)? CurrentWeapon->GetAttackRange() : AttackRange;
 }
 
 void AGothicCharacter::ConstructorFinder()
@@ -514,23 +527,25 @@ void AGothicCharacter::AttackEndComboState()
 
 void AGothicCharacter::AttackCheck()
 {
+	float FinalAttackRange = GetFinalAttackRange();
+
 	FHitResult HitResult;
 	FCollisionQueryParams Params(NAME_None, false, this);
 	bool bResult = GetWorld()->SweepSingleByChannel(
 		HitResult,
 		GetActorLocation(),
-		GetActorLocation() + GetActorForwardVector() * AttackRange,
+		GetActorLocation() + GetActorForwardVector() * FinalAttackRange,
 		FQuat::Identity,
 		ECollisionChannel::ECC_GameTraceChannel12,
-		FCollisionShape::MakeSphere(AttackRadius),
+		FCollisionShape::MakeSphere(FinalAttackRange),
 		Params
 	);
 
 #if ENABLE_DRAW_DEBUG
 
-	FVector TraceVec = GetActorForwardVector() * AttackRange;
+	FVector TraceVec = GetActorForwardVector() * FinalAttackRange;
 	FVector Center = GetActorLocation() + TraceVec * 0.5f;
-	float HalfHeight = AttackRange * 0.5f + AttackRadius;
+	float HalfHeight = FinalAttackRange * 0.5f + AttackRadius;
 	FQuat CapsuleRot = FRotationMatrix::MakeFromZ(TraceVec).ToQuat();	// ÄõÅÍ´Ï¾ð
 	FColor DrawColor = bResult ? FColor::Green : FColor::Red;
 	float DebugLifeTime = 5.0f;
