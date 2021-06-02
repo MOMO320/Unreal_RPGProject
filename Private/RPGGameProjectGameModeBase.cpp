@@ -45,3 +45,8 @@ void ARPGGameProjectGameModeBase::AddScore(ARPGPlayerController* ScoredPlayer)
 
 	RPGGameState->AddGameScore();
 }
+
+int32 ARPGGameProjectGameModeBase::GetScore() const
+{
+	return RPGGameState->GetTotalGameScore();
+}

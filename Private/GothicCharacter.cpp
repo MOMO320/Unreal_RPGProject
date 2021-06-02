@@ -14,6 +14,7 @@
 #include "RPGGameInstance.h"
 #include "RPGPlayerState.h"
 #include "UserHDWidget.h"
+#include "RPGGameProjectGameModeBase.h"
 
 // Sets default values
 AGothicCharacter::AGothicCharacter()
@@ -308,6 +309,15 @@ void AGothicCharacter::SetCharacterState(ECharacterState NewState)
 			GothicCharacterStat->SetNewLevel(RPGPlayerState->GetCharacterLevel());
 
 		}
+		else
+		{
+			auto RPGProjectGameMode = Cast<ARPGGameProjectGameModeBase>(GetWorld()->GetAuthGameMode());
+			ABCHECK(nullptr != RPGProjectGameMode);
+			int32 TargetLevel = FMath::CeilToInt(((float)RPGProjectGameMode->GetScore() * 0.8f));
+			int32 FinalLevel = FMath::Clamp<int32>(TargetLevel, 1, 20);
+			ABLOG(Warning, TEXT("New NPC Level : %d"), FinalLevel);
+			GothicCharacterStat->SetNewLevel(FinalLevel);
+		}
 		SetActorHiddenInGame(true);
 		HPBarWidget->SetHiddenInGame(true);
 		SetCanBeDamaged(false);
@@ -391,6 +401,14 @@ int32 AGothicCharacter::GetExp() const
 float AGothicCharacter::GetFinalAttackRange() const
 {
 	return (nullptr != CurrentWeapon)? CurrentWeapon->GetAttackRange() : AttackRange;
+}
+
+float AGothicCharacter::GetFinalAttackDamage() const
+{
+	float AttackDamage = (nullptr != CurrentWeapon) ? (GothicCharacterStat->GetAttack() + CurrentWeapon->GetAttackDamage()) : GothicCharacterStat->GetAttack();
+	float AttackModifier = (nullptr != CurrentWeapon) ? CurrentWeapon->GetAttackModifier() : 1.0f;
+
+	return AttackDamage * AttackModifier;
 }
 
 void AGothicCharacter::ConstructorFinder()
@@ -568,7 +586,7 @@ void AGothicCharacter::AttackCheck()
 			ABLOG(Warning, TEXT("Hit Actor Name : %s"), *HitResult.Actor->GetName());
 
 			FDamageEvent DamageEvent;
-			HitResult.Actor->TakeDamage(GothicCharacterStat->GetAttack(), DamageEvent, GetController(), this);
+			HitResult.Actor->TakeDamage(GetFinalAttackDamage(), DamageEvent, GetController(), this);
 		}
 	}
 }
