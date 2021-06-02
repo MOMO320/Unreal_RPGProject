@@ -60,4 +60,5 @@ void UUserHDWidget::UpdatePlayerState()
 	PlayerName->SetText(FText::FromString(CurrentRPGPlayerState->GetPlayerName()));
 	PlayerLevel->SetText(FText::FromString(FString::FromInt(CurrentRPGPlayerState->GetCharacterLevel())));
 	CurrentScore->SetText(FText::FromString(FString::FromInt(CurrentRPGPlayerState->GetGameScore())));
+	HighScore->SetText(FText::FromString(FString::FromInt(CurrentRPGPlayerState->GetGameHighScore())));
 }

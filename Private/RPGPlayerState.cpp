@@ -3,12 +3,15 @@
 
 #include "RPGPlayerState.h"
 #include "RPGGameInstance.h"
+#include "RPGSaveGame.h"
 
 ARPGPlayerState::ARPGPlayerState()
 {
 	CharacterLevel = 1;
 	GameScore = 0;
+	GameHighScore = 0;
 	Exp = 0;
+	SaveSlotName = TEXT("Player1");
 }
 
 int32 ARPGPlayerState::GetGameScore() const
@@ -19,6 +22,11 @@ int32 ARPGPlayerState::GetGameScore() const
 int32 ARPGPlayerState::GetCharacterLevel() const
 {
 	return CharacterLevel;
+}
+
+int32 ARPGPlayerState::GetGameHighScore() const
+{
+	return GameHighScore;
 }
 
 float ARPGPlayerState::GetExpRatio() const
@@ -46,22 +54,50 @@ bool ARPGPlayerState::AddExp(int32 IncomeExp)
 	}
 
 	OnPlayerStateChanged.Broadcast();
+	SavePlayerData();
 	return DidLevelUp;
 }
 
 void ARPGPlayerState::InitPlayerData()
 {
-	SetPlayerName(TEXT("°íµñ_GIRL"));
-	SetCharacterLevel(5);
-	CharacterLevel = 5;
+	auto RPGSaveGame = Cast<URPGSaveGame>(UGameplayStatics::LoadGameFromSlot(SaveSlotName, 0));
+
+	if (nullptr == RPGSaveGame)
+	{
+		RPGSaveGame = GetMutableDefault<URPGSaveGame>();
+	}
+	
+	SetPlayerName(RPGSaveGame->PlayerName);
+	SetCharacterLevel(RPGSaveGame->Level);
 	GameScore = 0;
-	Exp = 0;
+	GameHighScore = RPGSaveGame->HighScore;
+	Exp = RPGSaveGame->Exp;
+	SavePlayerData();
+}
+
+void ARPGPlayerState::SavePlayerData()
+{
+	URPGSaveGame* NewPlayerData = NewObject<URPGSaveGame>();
+	NewPlayerData->PlayerName = GetPlayerName();
+	NewPlayerData->Level = CharacterLevel;
+	NewPlayerData->Exp = Exp;
+	NewPlayerData->HighScore = GameHighScore;
+
+	if (!UGameplayStatics::SaveGameToSlot(NewPlayerData, SaveSlotName, 0))
+	{
+		ABLOG(Error, TEXT("SaveGame Error!"));
+	}
 }
 
 void ARPGPlayerState::AddGameScore()
 {
 	GameScore++;
+	if (GameScore >= GameHighScore)
+	{
+		GameHighScore = GameScore;
+	}
 	OnPlayerStateChanged.Broadcast();
+	SavePlayerData();
 }
 
 void ARPGPlayerState::SetCharacterLevel(int32 newCharacterLevel)
