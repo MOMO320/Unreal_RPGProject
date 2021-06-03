@@ -45,4 +45,7 @@ void UGamePlayWidget::OnReturnToTitleClicked()
 
 void UGamePlayWidget::OnRetrygameClicked()
 {
+	auto RPGPlayerController = Cast<ARPGPlayerController>(GetOwningPlayer());
+	ABCHECK(nullptr != RPGPlayerController);
+	RPGPlayerController->RestartLevel();
 }

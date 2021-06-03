@@ -14,6 +14,7 @@ ARPGGameProjectGameModeBase::ARPGGameProjectGameModeBase()
 	PlayerControllerClass = ARPGPlayerController::StaticClass();
 	PlayerStateClass = ARPGPlayerState::StaticClass();
 	GameStateClass = ARPGGameState::StaticClass();
+	ScoreToClear = 2;
 }
 
 void ARPGGameProjectGameModeBase::PostInitializeComponents()
@@ -44,6 +45,25 @@ void ARPGGameProjectGameModeBase::AddScore(ARPGPlayerController* ScoredPlayer)
 	}
 
 	RPGGameState->AddGameScore();
+
+	if (GetScore() >= ScoreToClear)
+	{
+		RPGGameState->SetGameCleared();
+
+		for (FConstPawnIterator It = GetWorld()->GetPawnIterator(); It; ++It)
+		{
+			(*It)->TurnOff();
+		}
+
+		for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+		{
+			const auto RPGPlayerController = Cast<ARPGPlayerController>(It->Get());
+			if (nullptr != RPGPlayerController)
+			{
+				RPGPlayerController->ShowResultUI();
+			}
+		}
+	}
 }
 
 int32 ARPGGameProjectGameModeBase::GetScore() const

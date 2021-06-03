@@ -26,4 +26,7 @@ private:
 	UPROPERTY()
 		class ARPGGameState* RPGGameState;
 
+	UPROPERTY()
+		int32 ScoreToClear;
+
 };

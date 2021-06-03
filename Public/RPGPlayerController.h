@@ -22,6 +22,7 @@ public:
 	void NPCKill(class AGothicCharacter* KilledNPC) const;
 	void AddGameScore() const;
 	void ChangeInputMode(bool bGameMode = true);
+	void ShowResultUI();
 
 protected:
 	virtual void BeginPlay() override;
@@ -32,6 +33,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
 		TSubclassOf<class UGamePlayWidget> MenuWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
+		TSubclassOf<class UGamePlayResultWidget> ResultWidgetClass;
 
 private:
 	void OnGamePause();
@@ -45,6 +49,9 @@ private:
 
 	UPROPERTY()
 		class UGamePlayWidget* MenuWidget;
+
+	UPROPERTY()
+		class UGamePlayResultWidget* ResultWidget;
 
 	FInputModeGameOnly GameInputMode;
 	FInputModeUIOnly UIInputMode;

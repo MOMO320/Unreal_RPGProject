@@ -6,6 +6,7 @@
 ARPGGameState::ARPGGameState()
 {
 	TotalGameScore = 0;
+	bGameCleared = false;
 }
 
 int32 ARPGGameState::GetTotalGameScore() const
@@ -16,4 +17,14 @@ int32 ARPGGameState::GetTotalGameScore() const
 void ARPGGameState::AddGameScore()
 {
 	TotalGameScore++;
+}
+
+void ARPGGameState::SetGameCleared()
+{
+	bGameCleared = true;
+}
+
+bool ARPGGameState::IsGameCleared() const
+{
+	return bGameCleared;
 }

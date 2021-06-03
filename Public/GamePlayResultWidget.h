@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "RPGGameProject.h"
 #include "GamePlayWidget.h"
 #include "GamePlayResultWidget.generated.h"
 
@@ -14,4 +14,12 @@ class RPGGAMEPROJECT_API UGamePlayResultWidget : public UGamePlayWidget
 {
 	GENERATED_BODY()
 	
+public:
+	void BindGameState(class ARPGGameState* GameState);
+
+protected:
+	virtual void NativeConstruct() override;
+
+private:
+	TWeakObjectPtr<class ARPGGameState> CurrentGameState;
 };

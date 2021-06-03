@@ -378,7 +378,7 @@ void AGothicCharacter::SetCharacterState(ECharacterState NewState)
 			
 			if (bIsPlayer)
 			{
-				GothicCharacterController->RestartLevel();
+				GothicCharacterController->ShowResultUI();
 			}
 			else
 			{

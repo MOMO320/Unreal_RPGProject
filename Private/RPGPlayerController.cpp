@@ -6,6 +6,8 @@
 #include "RPGPlayerState.h"
 #include "GothicCharacter.h"
 #include "GamePlayWidget.h"
+#include "GamePlayResultWidget.h"
+#include "RPGGameState.h"
 
 ARPGPlayerController::ARPGPlayerController()
 {
@@ -21,6 +23,13 @@ ARPGPlayerController::ARPGPlayerController()
 	if (UI_MENU_C.Succeeded())
 	{
 		MenuWidgetClass = UI_MENU_C.Class;
+	}
+
+	static ConstructorHelpers::FClassFinder<UGamePlayResultWidget> UI_RESULT_C(TEXT("/Game/Book/UI/UI_Result.UI_Result_C"));
+
+	if (UI_RESULT_C.Succeeded())
+	{
+		ResultWidgetClass = UI_RESULT_C.Class;
 	}
 }
 
@@ -58,6 +67,16 @@ void ARPGPlayerController::ChangeInputMode(bool bGameMode)
 	}
 }
 
+void ARPGPlayerController::ShowResultUI()
+{
+	auto RPGGameState = Cast<ARPGGameState>(UGameplayStatics::GetGameState(this));
+	ABCHECK(nullptr != RPGGameState);
+	ResultWidget->BindGameState(RPGGameState);
+
+	ResultWidget->AddToViewport();
+	ChangeInputMode(false);
+}
+
 void ARPGPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -76,6 +95,8 @@ void ARPGPlayerController::BeginPlay()
 	HUDWidget->BindPlayerState(RPGPlayerState);
 	RPGPlayerState->OnPlayerStateChanged.Broadcast();
 
+	ResultWidget = CreateWidget<UGamePlayResultWidget>(this, ResultWidgetClass);
+	ABCHECK(nullptr != ResultWidget);
 }
 
 void ARPGPlayerController::SetupInputComponent()
